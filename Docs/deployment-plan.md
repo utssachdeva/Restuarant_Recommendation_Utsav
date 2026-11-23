@@ -50,7 +50,7 @@ cd web && npm run build
 
 ### 1.2 Bind to Railway’s `PORT` ✅
 
-Root `Procfile` starts uvicorn on `$PORT` (injected by Railway). Do not hardcode `8000` in production.
+Root `Procfile` + `railway.toml` start uvicorn on `$PORT` (injected by Railway). Do not hardcode `8000` in production.
 
 ```text
 web: uvicorn src.api:app --host 0.0.0.0 --port $PORT
@@ -58,7 +58,19 @@ web: uvicorn src.api:app --host 0.0.0.0 --port $PORT
 
 (Windows note: `$PORT` is for the Linux container on Railway, not local PowerShell.)
 
-### 1.3 Do **not** commit secrets
+### 1.3 Deploy config files in repo ✅
+
+| File | Purpose |
+| --- | --- |
+| `Dockerfile` | Production API image for Railway |
+| `.dockerignore` | Keeps `web/`, secrets, and caches out of the image |
+| `railway.toml` | Docker builder, start command, `/api/health` check |
+| `Procfile` | Fallback start command |
+| `runtime.txt` | Python 3.12 hint if Nixpacks is used instead of Docker |
+| `web/vercel.json` | Marks the frontend as Next.js |
+| `web/src/lib/api.ts` | Longer fetch timeouts for Railway cold starts |
+
+### 1.4 Do **not** commit secrets
 
 Keep `.env` and `web/.env.local` out of git (already in `.gitignore`). Set secrets only in Railway / Vercel dashboards.
 
@@ -80,7 +92,7 @@ Keep `.env` and `web/.env.local` out of git (already in `.gitignore`). Set secre
 | Build | Default (pip install from `requirements.txt`) |
 | Watch paths (optional) | `src/**`, `requirements.txt`, `data/**` |
 
-If Railway offers a Dockerfile and you don’t have one, use **Nixpacks** / Railpack (default) instead.
+This repo includes a root `Dockerfile` and `railway.toml` (`builder = "DOCKERFILE"`). Railway should pick them up automatically from the GitHub repo.
 
 ### 2.3 Environment variables (Railway)
 
@@ -268,8 +280,8 @@ NEXT_PUBLIC_API_URL=https://your-api.up.railway.app
 ## 9. Post-MVP improvements (optional)
 
 1. Persist `data/processed/` on a Railway volume to skip HF download every new instance.
-2. Add a Railway health-check path: `/api/health`.
-3. Raise frontend fetch timeouts for the first recommendation after a cold start.
+2. ~~Add a Railway health-check path: `/api/health`.~~ ✅ in `railway.toml`
+3. ~~Raise frontend fetch timeouts for the first recommendation after a cold start.~~ ✅ in `web/src/lib/api.ts`
 4. Restrict CORS to exact production + preview URLs (Vercel preview deployments need their origins listed or a wildcard policy you accept).
 5. Add simple rate limiting on `/api/recommend` if the public demo gets abused.
 

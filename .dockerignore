@@ -1,0 +1,28 @@
+.git
+.venv
+venv
+env
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+.env
+.streamlit
+
+# Frontend and design assets are not needed in the API image
+web
+stitch_table_ai_restaurant_finder
+Docs
+
+# Local caches (API rebuilds on first request if missing)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+*.md
+.DS_Store
+Thumbs.db
