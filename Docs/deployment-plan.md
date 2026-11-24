@@ -120,8 +120,10 @@ Set these in **Variables** for the API service:
 In **Settings → Deploy → Custom Start Command**:
 
 ```bash
-uvicorn src.api:app --host 0.0.0.0 --port $PORT
+sh -c 'uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-8000}'
 ```
+
+Use a shell wrapper — if Railway runs the command without a shell, `$PORT` is passed as the literal string and uvicorn fails.
 
 ### 2.5 Public networking
 
