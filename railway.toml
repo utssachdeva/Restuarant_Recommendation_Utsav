@@ -6,8 +6,8 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-# Must run via shell so Railway's PORT env var is expanded (bare $PORT is passed literally).
-startCommand = "sh -c 'uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-8000}'"
+# No $PORT in this string — start.py reads PORT from the environment.
+startCommand = "python start.py"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"

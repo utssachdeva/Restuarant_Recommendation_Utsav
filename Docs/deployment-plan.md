@@ -120,10 +120,10 @@ Set these in **Variables** for the API service:
 In **Settings → Deploy → Custom Start Command**:
 
 ```bash
-sh -c 'uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-8000}'
+python start.py
 ```
 
-Use a shell wrapper — if Railway runs the command without a shell, `$PORT` is passed as the literal string and uvicorn fails.
+`start.py` reads `PORT` from the environment. Do **not** put `$PORT` in the Railway start command — Railway may pass it as the literal string `$PORT` and uvicorn will crash.
 
 ### 2.5 Public networking
 

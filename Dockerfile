@@ -12,10 +12,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src ./src
 COPY data ./data
+COPY start.py ./start.py
 COPY .env.example ./.env.example
 
 # Railway injects PORT; default 8000 for local `docker run`
 ENV PORT=8000
 EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn src.api:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Avoid shell $PORT expansion — start.py reads os.environ["PORT"].
+CMD ["python", "start.py"]
