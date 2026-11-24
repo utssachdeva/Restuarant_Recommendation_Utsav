@@ -30,7 +30,8 @@ Thumbs.db
 # Streamlit
 .streamlit/secrets.toml
 
-# Next.js
+# Node (root Railway IaC helper + Next.js)
+node_modules/
 web/node_modules/
 web/.next/
 web/out/

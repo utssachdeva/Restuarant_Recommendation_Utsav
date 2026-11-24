@@ -50,13 +50,9 @@ cd web && npm run build
 
 ### 1.2 Bind to Railway’s `PORT` ✅
 
-Root `Procfile` + `railway.toml` start uvicorn on `$PORT` (injected by Railway). Do not hardcode `8000` in production.
+Use `python start.py` (reads `PORT` from the environment). Do **not** set a Railway Custom Start Command that contains `$PORT` — Railway may pass it literally and crash uvicorn.
 
-```text
-web: uvicorn src.api:app --host 0.0.0.0 --port $PORT
-```
-
-(Windows note: `$PORT` is for the Linux container on Railway, not local PowerShell.)
+Confirmed live service setting must be: `python start.py` (see `.railway/railway.ts`).
 
 ### 1.3 Deploy config files in repo ✅
 
