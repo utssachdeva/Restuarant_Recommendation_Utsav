@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { fetchOptions, fetchRecommendations } from "@/lib/api";
+import { API_URL, IS_LOCAL_API, fetchOptions, fetchRecommendations } from "@/lib/api";
 import type {
   FormOptions,
   RecommendationResponse,
@@ -90,10 +90,20 @@ export function ZestApp() {
             <div className="mb-space-lg rounded-lg border border-outline-variant bg-surface-container-lowest p-space-md text-body-md text-error">
               {error}
               <p className="mt-1 text-body-sm text-tertiary">
-                Start the API with{" "}
-                <code className="text-on-surface">
-                  uvicorn src.api:app --reload --port 8000
-                </code>
+                {IS_LOCAL_API ? (
+                  <>
+                    Start the API with{" "}
+                    <code className="text-on-surface">
+                      uvicorn src.api:app --reload --port 8000
+                    </code>
+                  </>
+                ) : (
+                  <>
+                    Could not reach the API at{" "}
+                    <code className="text-on-surface">{API_URL}</code>. If
+                    the backend just woke up, wait a moment and refresh.
+                  </>
+                )}
               </p>
             </div>
           )}

@@ -1,6 +1,24 @@
 import type { FormOptions, RecommendationResponse, UserPreferences } from "./types";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/** Strip trailing slash so `${API_URL}/api/...` never doubles up. */
+function normalizeApiUrl(raw: string): string {
+  return raw.replace(/\/+$/, "");
+}
+
+/** Railway production API — used when NEXT_PUBLIC_API_URL is unset at build time. */
+const DEFAULT_PRODUCTION_API_URL =
+  "https://web-production-fcb9eb05.up.railway.app";
+
+const DEFAULT_API_URL =
+  process.env.NODE_ENV === "production"
+    ? DEFAULT_PRODUCTION_API_URL
+    : "http://localhost:8000";
+
+export const API_URL = normalizeApiUrl(
+  process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL,
+);
+
+export const IS_LOCAL_API = /localhost|127\.0\.0\.1/.test(API_URL);
 
 /** First `/api/options` may download + clean the HF dataset on a cold Railway box. */
 const OPTIONS_TIMEOUT_MS = 180_000;
