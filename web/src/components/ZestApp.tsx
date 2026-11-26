@@ -78,9 +78,47 @@ export function ZestApp() {
     setError(null);
   }, []);
 
+  const [scrollTarget, setScrollTarget] = useState<string | null>(null);
+
+  const goHome = useCallback(() => {
+    setResponse(null);
+    setError(null);
+    setScrollTarget("top");
+  }, []);
+
+  const goHowItWorks = useCallback(() => {
+    setResponse(null);
+    setError(null);
+    setScrollTarget("how");
+  }, []);
+
+  const goFindRestaurant = useCallback(() => {
+    setResponse(null);
+    setError(null);
+    setScrollTarget("desk");
+  }, []);
+
+  useEffect(() => {
+    if (!scrollTarget || response) return;
+    const id = scrollTarget;
+    setScrollTarget(null);
+    const timer = window.setTimeout(() => {
+      if (id === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+    return () => window.clearTimeout(timer);
+  }, [scrollTarget, response, options, prefs]);
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-surface font-sans text-on-surface antialiased">
-      <Header />
+      <Header
+        onHome={goHome}
+        onHowItWorks={goHowItWorks}
+        onFindRestaurant={goFindRestaurant}
+      />
       <main id="top" className="w-full bg-surface">
         {loadingOptions && (
           <div

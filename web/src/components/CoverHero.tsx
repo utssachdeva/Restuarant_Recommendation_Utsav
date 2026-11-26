@@ -90,7 +90,7 @@ export function CoverHero({ kitchenCount }: Props) {
               href="#desk"
               className="zest-btn inline-flex h-auto items-center gap-2.5 bg-primary px-7 py-4 text-[16px] font-semibold text-on-primary"
             >
-              Find a table
+              Find a restaurant
               <svg
                 aria-hidden
                 width="18"

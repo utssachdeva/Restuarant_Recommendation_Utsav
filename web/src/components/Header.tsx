@@ -2,7 +2,13 @@
 
 import { FoodGlyph } from "@/lib/cuisineIcons";
 
-export function Header() {
+type Props = {
+  onHome: () => void;
+  onHowItWorks: () => void;
+  onFindRestaurant: () => void;
+};
+
+export function Header({ onHome, onHowItWorks, onFindRestaurant }: Props) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-[#FFFBF5]/92 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-margin py-5 md:px-gutter-desktop">
@@ -13,7 +19,12 @@ export function Header() {
           Skip to content
         </a>
 
-        <a href="#top" className="flex items-center gap-3 text-on-surface no-underline">
+        <button
+          type="button"
+          onClick={onHome}
+          className="flex cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left text-on-surface"
+          aria-label="Zest home"
+        >
           <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-peach">
             <span className="block h-[34px] w-[34px]">
               <FoodGlyph kind="italian" />
@@ -27,30 +38,26 @@ export function Header() {
               BANGALORE NIGHTS
             </span>
           </span>
-        </a>
+        </button>
 
         <nav
           className="flex flex-wrap items-center gap-5 text-[15px] font-medium md:gap-7"
           aria-label="Main"
         >
-          <a
-            href="#how"
-            className="hidden text-[#4A423B] no-underline transition-colors hover:text-primary sm:inline"
+          <button
+            type="button"
+            onClick={onHowItWorks}
+            className="hidden cursor-pointer border-0 bg-transparent p-0 text-[15px] font-medium text-[#4A423B] transition-colors hover:text-primary sm:inline"
           >
             How it works
-          </a>
-          <a
-            href="#desk"
-            className="hidden text-[#4A423B] no-underline transition-colors hover:text-primary sm:inline"
+          </button>
+          <button
+            type="button"
+            onClick={onFindRestaurant}
+            className="zest-btn inline-flex h-auto cursor-pointer items-center justify-center border-0 bg-primary px-[22px] py-3 text-[15px] font-semibold text-on-primary"
           >
-            Cuisines
-          </a>
-          <a
-            href="#desk"
-            className="zest-btn inline-flex h-auto items-center justify-center bg-primary px-[22px] py-3 text-[15px] font-semibold text-on-primary"
-          >
-            Find a table
-          </a>
+            Find a restaurant
+          </button>
         </nav>
       </div>
     </header>
