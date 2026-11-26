@@ -100,16 +100,51 @@ export function ZestApp() {
 
   useEffect(() => {
     if (!scrollTarget || response) return;
+
     const id = scrollTarget;
-    setScrollTarget(null);
-    const timer = window.setTimeout(() => {
+    let cancelled = false;
+    let attempts = 0;
+    let retryTimer = 0;
+
+    const finish = () => {
+      if (!cancelled) setScrollTarget(null);
+    };
+
+    const run = () => {
+      if (cancelled) return;
+
       if (id === "top") {
         window.scrollTo({ top: 0, behavior: "smooth" });
+        finish();
         return;
       }
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
-    return () => window.clearTimeout(timer);
+
+      const el = document.getElementById(id);
+      if (el) {
+        // Use window scroll — root overflow-x-hidden can break scrollIntoView.
+        const headerOffset = 96;
+        const top =
+          el.getBoundingClientRect().top + window.scrollY - headerOffset;
+        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        finish();
+        return;
+      }
+
+      attempts += 1;
+      if (attempts < 20) {
+        retryTimer = window.setTimeout(run, 50);
+        return;
+      }
+      finish();
+    };
+
+    // Wait one frame so HomeDiscovery can mount after leaving results.
+    const frame = window.requestAnimationFrame(run);
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(retryTimer);
+    };
   }, [scrollTarget, response, options, prefs]);
 
   return (

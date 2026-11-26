@@ -47,7 +47,7 @@ export function Header({ onHome, onHowItWorks, onFindRestaurant }: Props) {
           <button
             type="button"
             onClick={onHowItWorks}
-            className="hidden cursor-pointer border-0 bg-transparent p-0 text-[15px] font-medium text-[#4A423B] transition-colors hover:text-primary sm:inline"
+            className="cursor-pointer border-0 bg-transparent p-0 text-[15px] font-medium text-[#4A423B] transition-colors hover:text-primary"
           >
             How it works
           </button>
