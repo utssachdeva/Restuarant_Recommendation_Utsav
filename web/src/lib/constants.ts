@@ -5,6 +5,8 @@ export const FREQUENT_LOCATIONS = [
   "Malleshwaram",
   "Whitefield",
   "Jayanagar",
+  "HSR",
+  "JP Nagar",
 ] as const;
 
 export const FEATURED_CUISINES = [
@@ -25,18 +27,39 @@ export const RATING_OPTIONS = [
 ] as const;
 
 export const BUDGET_OPTIONS = [
-  { value: "low" as const, label: "Low", marks: "₹", detail: "Under ₹500 for two" },
+  {
+    value: "low" as const,
+    label: "₹",
+    marks: "₹",
+    detail: "Up to ₹500",
+    range: "Up to ₹500",
+  },
   {
     value: "medium" as const,
-    label: "Medium",
+    label: "₹₹",
     marks: "₹₹",
-    detail: "₹501 – ₹1,000 for two",
+    detail: "₹501 – ₹1,000",
+    range: "₹501 – ₹1,000",
   },
-  { value: "high" as const, label: "High", marks: "₹₹₹", detail: "Above ₹1,000 for two" },
+  {
+    value: "high" as const,
+    label: "₹₹₹",
+    marks: "₹₹₹",
+    detail: "Above ₹1,000",
+    range: "Above ₹1,000",
+  },
 ];
 
-export const SPOTLIGHT_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuAKyu6bwAr1rbQ6l7q5HJQGcBE3DP144RD4Lg6r3DFDrX9rw3fvA_8xI5FK6x38SC7TtUhZZ-kDSNduG_gc1EW-VJpsvK6KJWLAw7Tn2crpg-qvgrDmMKWIWyTKVwpltMKN4HCEizy1YVL93-dzIFCqhtV1BYzmimGHDQuDtQGmO4JyryajFM4fuSwGcDAsYwdprDaddAcybmAlGuNw9nMHPJxCqxeofst5RNuWVaA";
+export const MARQUEE_ITEMS = [
+  "Masala dosa",
+  "Dim sum",
+  "Dum biryani",
+  "Wood-fired pizza",
+  "Filter coffee",
+  "Butter chicken",
+  "Fish curry",
+  "Smash burgers",
+] as const;
 
 export function titleCase(value: string): string {
   return value
@@ -48,9 +71,9 @@ export function titleCase(value: string): string {
 
 export function budgetDisplay(budget: string | string[]): string {
   const map: Record<string, string> = {
-    low: "₹ (Low)",
-    medium: "₹₹ (Medium)",
-    high: "₹₹₹ (High)",
+    low: "Up to ₹500",
+    medium: "₹501 – ₹1,000",
+    high: "Above ₹1,000",
   };
   const levels = Array.isArray(budget) ? budget : [budget];
   return levels.map((b) => map[b] ?? b).join(" · ");

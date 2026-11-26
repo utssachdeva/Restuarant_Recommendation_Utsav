@@ -5,41 +5,38 @@ type Props = {
 export function MatchingOverlay({ location }: Props) {
   const locationLabel = Array.isArray(location) ? location.join(", ") : location;
   return (
-    <div className="fixed inset-0 top-16 z-30 flex items-center justify-center bg-surface/60 px-margin backdrop-blur-[2px] md:px-gutter-desktop">
-      <div className="relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg text-center shadow-xl sm:p-space-xl">
-        <div className="relative mb-space-lg flex h-24 w-24 items-center justify-center">
-          <div className="absolute inset-0 animate-ping rounded-full bg-primary/5 opacity-75 duration-1000" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="material-symbols-outlined animate-pulse text-[28px] text-primary">
-              local_dining
-            </span>
-          </div>
-        </div>
-        <div className="mb-space-lg flex max-w-md flex-col gap-space-xs">
-          <span className="text-label-sm uppercase tracking-widest text-secondary">
-            Autonomous Gastronomic Filter
+    <div className="fixed inset-0 top-[76px] z-30 flex items-center justify-center bg-[#FFFBF5]/85 px-margin md:px-gutter-desktop">
+      <div className="relative flex w-full max-w-xl flex-col items-center overflow-hidden rounded-[28px] border border-outline-variant bg-white p-8 text-center shadow-xl sm:p-10">
+        <div className="relative mb-6 flex h-20 w-20 items-center justify-center">
+          <div className="absolute inset-0 animate-ping rounded-full bg-primary/15" />
+          <span className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-peach text-primary shadow-lg">
+            <span className="material-symbols-outlined text-[28px]">local_dining</span>
           </span>
-          <h2 className="font-headline text-headline-md font-medium leading-tight text-on-surface">
-            Finding your ideal tables in Bangalore…
+        </div>
+        <div className="mb-6 flex max-w-md flex-col gap-2">
+          <span className="text-[12px] font-bold tracking-[0.14em] text-[#B8321C]">
+            RANKING PASS
+          </span>
+          <h2 className="font-display text-headline-md leading-tight text-on-surface">
+            Finding tables in Bangalore…
           </h2>
         </div>
-        <div className="mb-space-lg flex w-full max-w-md flex-col gap-space-md rounded-lg bg-surface-container-low p-space-md text-left">
+        <div className="mb-6 flex w-full max-w-md flex-col gap-4 rounded-[22px] bg-[#FBF5EE] p-5 text-left">
           <Step title="Cross-referencing dining rooms" detail={locationLabel} />
           <Step
-            title="Filtering for courtyard dining & craft pours"
-            detail="Botanical terraces, micro-lot roasters, low-intervention cellars"
+            title="Matching cuisine symbols"
+            detail="Pizza, dosa, dumplings, coffee — whatever you tapped"
           />
           <Step
             active
-            title="Synthesizing recent diner sentiment & critiques"
-            detail="Reviewing kitchen consistency, host seating rhythms, table acoustics"
+            title="Ranking diner sentiment"
+            detail="Consistency, seating rhythm, table acoustics"
           />
         </div>
-        <p className="max-w-xs text-body-sm leading-relaxed text-tertiary">
-          Matching recommendations with your specific criteria. Usually takes a few
-          seconds.
+        <p className="max-w-xs text-body-sm font-semibold leading-relaxed text-on-surface-variant">
+          Usually a few seconds — longer on a cold start.
         </p>
-        <div className="absolute bottom-0 left-0 h-1 w-full overflow-hidden bg-surface-container-high">
+        <div className="absolute bottom-0 left-0 h-1.5 w-full overflow-hidden bg-surface-container-high">
           <div className="h-full w-2/3 animate-pulse bg-primary" />
         </div>
       </div>
@@ -50,35 +47,22 @@ export function MatchingOverlay({ location }: Props) {
 function Step({
   title,
   detail,
-  active,
+  active = false,
 }: {
   title: string;
   detail: string;
   active?: boolean;
 }) {
   return (
-    <div className="flex items-start gap-space-sm">
-      <div
-        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-          active
-            ? "animate-spin bg-primary text-on-primary"
-            : "bg-secondary text-on-secondary"
+    <div className="flex gap-3">
+      <span
+        className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${
+          active ? "bg-primary" : "bg-[#E6DCCF]"
         }`}
-        style={active ? { animationDuration: "2.5s" } : undefined}
-      >
-        <span className="material-symbols-outlined text-[14px]">
-          {active ? "sync" : "check"}
-        </span>
-      </div>
-      <div className="flex flex-col">
-        <span
-          className={`text-body-md font-medium ${
-            active ? "text-primary" : "text-on-surface"
-          }`}
-        >
-          {title}
-        </span>
-        <span className="text-body-sm text-tertiary">{detail}</span>
+      />
+      <div>
+        <p className="text-[15px] font-semibold text-on-surface">{title}</p>
+        <p className="text-body-sm text-on-surface-variant">{detail}</p>
       </div>
     </div>
   );

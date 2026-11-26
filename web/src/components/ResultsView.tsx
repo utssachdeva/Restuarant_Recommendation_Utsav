@@ -1,6 +1,7 @@
 "use client";
 
 import { budgetDisplay, titleCase } from "@/lib/constants";
+import { FoodGlyph, cuisineIconFor } from "@/lib/cuisineIcons";
 import type { RecommendationResponse, UserPreferences } from "@/lib/types";
 import { EmptyState } from "./EmptyState";
 import { RecommendationCard } from "./RecommendationCard";
@@ -19,121 +20,128 @@ export function ResultsView({ prefs, response, onModify }: Props) {
   const { meta } = response;
 
   return (
-    <div className="grid grid-cols-1 items-start gap-space-lg lg:grid-cols-12 lg:gap-gutter-desktop">
-      <aside className="space-y-space-lg lg:sticky lg:top-24 lg:col-span-4">
-        <div className="rounded-lg bg-surface-container-lowest p-space-lg shadow-sm">
-          <div className="flex items-center justify-between pb-space-sm">
-            <span className="text-label-sm font-semibold uppercase tracking-widest text-secondary">
-              Active Ledger
+    <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12" data-enter>
+      <aside className="space-y-5 lg:sticky lg:top-24 lg:col-span-4">
+        <div className="relative overflow-hidden rounded-[28px] border border-outline-variant bg-white p-7">
+          <div className="flex items-center justify-between gap-3 pb-1">
+            <span className="font-display text-[22px] tracking-[-0.02em] text-on-surface">
+              Tonight&apos;s ticket
             </span>
-            <span className="text-body-sm text-tertiary">Session · live</span>
+            <span className="rounded-full bg-[#E3F3E8] px-2.5 py-1.5 text-[12px] font-bold tracking-[0.1em] text-[#1D5C38]">
+              LIVE
+            </span>
           </div>
-          <div className="mt-space-md space-y-space-md">
+          <div className="relative mx-[-28px] my-4 border-t-2 border-dashed border-[#EADFD1]">
+            <span className="absolute -left-3 -top-3 block h-[22px] w-[22px] rounded-full border-r border-outline-variant bg-[#FFFBF5]" />
+            <span className="absolute -right-3 -top-3 block h-[22px] w-[22px] rounded-full border-l border-outline-variant bg-[#FFFBF5]" />
+          </div>
+          <div className="space-y-5">
             <div>
-              <span className="block text-label-sm uppercase tracking-wider text-tertiary">
-                Neighborhoods
+              <span className="block text-[12px] font-bold tracking-[0.1em] text-on-surface-variant">
+                WHERE
               </span>
-              <p className="mt-0.5 text-title-md text-on-surface">
+              <p className="mt-1 text-[16px] font-semibold text-on-surface">
                 {prefs.location.join(" · ")}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-space-sm pt-space-xs">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <span className="block text-label-sm uppercase tracking-wider text-tertiary">
-                  Price Level
+                <span className="block text-[12px] font-bold tracking-[0.1em] text-on-surface-variant">
+                  SPEND
                 </span>
-                <p className="mt-0.5 text-body-md font-medium text-on-surface">
+                <p className="mt-1 text-[16px] font-semibold text-on-surface">
                   {budgetDisplay(prefs.budget)}
                 </p>
               </div>
               <div>
-                <span className="block text-label-sm uppercase tracking-wider text-tertiary">
-                  Threshold
+                <span className="block text-[12px] font-bold tracking-[0.1em] text-on-surface-variant">
+                  RATING
                 </span>
-                <p className="mt-0.5 text-body-md font-medium text-on-surface">
-                  {prefs.min_rating.toFixed(1)}+ Rating
+                <p className="mt-1 text-[16px] font-semibold text-on-surface">
+                  {prefs.min_rating.toFixed(1)}+
                 </p>
               </div>
             </div>
             <div>
-              <span className="block text-label-sm uppercase tracking-wider text-tertiary">
-                Palette Focus
+              <span className="block text-[12px] font-bold tracking-[0.1em] text-on-surface-variant">
+                CRAVING
               </span>
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {(prefs.cuisine.length ? prefs.cuisine : ["any"]).map((c) => (
-                  <span
-                    key={c}
-                    className="rounded bg-secondary-container px-2 py-0.5 text-label-sm text-on-secondary-container"
-                  >
-                    {c === "any" ? "Any cuisine" : titleCase(c)}
-                  </span>
-                ))}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {(prefs.cuisine.length ? prefs.cuisine : ["any"]).map((c) => {
+                  if (c === "any") {
+                    return (
+                      <span
+                        key={c}
+                        className="rounded-full bg-secondary-container px-3 py-1.5 text-[14px] font-semibold text-on-secondary-container"
+                      >
+                        Surprise me
+                      </span>
+                    );
+                  }
+                  const icon = cuisineIconFor(c);
+                  return (
+                    <span
+                      key={c}
+                      className="inline-flex items-center gap-1.5 rounded-full py-1 pr-3 pl-1 text-[14px] font-semibold text-on-surface"
+                      style={{ background: icon.tint }}
+                    >
+                      <span className="block h-7 w-7">
+                        <FoodGlyph kind={icon.kind} />
+                      </span>
+                      {titleCase(c)}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </div>
-          <div className="mt-space-md flex items-center justify-between pt-space-lg">
+          <div className="mt-6 flex items-center justify-between border-t border-outline-variant pt-5">
             <button
               type="button"
               onClick={onModify}
-              className="group flex items-center gap-1.5 text-label-md text-primary transition-colors duration-150 hover:text-primary-container"
+              className="group flex items-center gap-1.5 text-[14px] font-semibold text-[#B8321C]"
             >
               <span>Modify criteria</span>
               <span className="material-symbols-outlined text-[16px] transition-transform group-hover:translate-x-0.5">
                 tune
               </span>
             </button>
-            <span className="text-body-sm text-tertiary">Real-time sync</span>
           </div>
         </div>
-        <div className="space-y-2 rounded-lg bg-surface-container p-space-md">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px] text-secondary">
-              verified
-            </span>
-            <span className="text-label-sm font-medium text-on-surface">
-              Field Evaluator Note
-            </span>
-          </div>
-          <p className="text-body-sm leading-relaxed text-on-surface-variant">
-            Tables were vetted against weekend acoustic levels, kitchen cadence, and
-            ingredient integrity against your soft preferences.
+        <div className="rounded-[28px] bg-mint p-6">
+          <p className="text-[15px] leading-relaxed text-[#2C4A38]">
+            Tables checked against weekend noise, kitchen pace, and how well soft
+            preferences match the room.
           </p>
         </div>
       </aside>
 
-      <main className="flex flex-col space-y-space-xl lg:col-span-8">
-        <section className="space-y-space-md">
-          <div className="flex flex-col justify-between gap-space-xs sm:flex-row sm:items-baseline">
-            <h1 className="font-headline text-headline-lg font-medium tracking-tight text-on-surface">
-              Curated for your evening
+      <main className="flex flex-col gap-8 lg:col-span-8">
+        <section className="space-y-4">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-baseline">
+            <h1 className="font-display text-headline-lg tracking-tight text-on-surface">
+              Your shortlist
             </h1>
-            <span className="text-body-sm font-medium text-tertiary">
-              {meta.result_count} picks · distilled from {meta.candidate_count} evaluated
-              Bangalore tables
+            <span className="text-[14px] text-on-surface-variant">
+              {meta.result_count} picks · from {meta.candidate_count} tables
             </span>
           </div>
-          <div className="space-y-space-sm rounded-lg bg-surface-container-lowest p-space-lg shadow-sm">
-            <div className="flex items-center gap-2 text-label-sm uppercase tracking-wider text-secondary">
-              <span className="material-symbols-outlined text-[16px]">
-                temp_preferences_custom
-              </span>
-              Sensory Synthesis
-            </div>
-            <p className="text-body-lg font-normal leading-relaxed text-on-surface-variant">
+          <div className="rounded-[24px] border border-outline-variant bg-white p-6">
+            <p className="text-body-lg leading-relaxed text-[#5E554D]">
               {response.summary ||
                 "A shortlist ranked for your neighbourhood, budget, and soft preferences."}
             </p>
           </div>
         </section>
 
-        <section className="flex flex-col space-y-space-lg">
+        <section className="flex flex-col gap-5">
           {response.recommendations.map((item) => (
             <RecommendationCard key={`${item.rank}-${item.name}`} item={item} />
           ))}
         </section>
 
         {(meta.model || meta.dry_run || meta.fallback_used) && (
-          <p className="text-body-sm text-tertiary">
+          <p className="text-[12px] text-on-surface-variant">
             {[
               meta.model ? `Model: ${meta.model}` : null,
               meta.dry_run ? "Dry-run mode" : null,

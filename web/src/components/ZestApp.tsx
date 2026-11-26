@@ -25,6 +25,7 @@ function defaultPrefs(locations: string[]): UserPreferences {
   };
 }
 
+
 export function ZestApp() {
   const [options, setOptions] = useState<FormOptions | null>(null);
   const [prefs, setPrefs] = useState<UserPreferences | null>(null);
@@ -78,53 +79,65 @@ export function ZestApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-surface font-sans text-on-surface antialiased">
+    <div className="min-h-screen overflow-x-hidden bg-surface font-sans text-on-surface antialiased">
       <Header />
-      <main className="w-full bg-surface pt-16">
-        <div className="mx-auto max-w-[1180px] px-margin py-space-xl md:px-gutter-desktop">
-          {loadingOptions && (
-            <p className="text-body-md text-tertiary">Loading Bangalore ledger…</p>
-          )}
+      <main id="top" className="w-full bg-surface">
+        {loadingOptions && (
+          <div
+            className="mx-auto flex max-w-xl flex-col items-center gap-4 px-margin py-24 text-center"
+            data-enter
+          >
+            <div className="h-10 w-10 animate-pulse rounded-full bg-surface-container" />
+            <p className="text-[14px] font-semibold text-on-surface-variant">
+              Loading Bangalore ledger…
+            </p>
+            <div className="h-3 w-48 rounded-full bg-surface-container" />
+            <div className="h-3 w-32 rounded-full bg-surface-container-low" />
+          </div>
+        )}
 
-          {error && !submitting && (
-            <div className="mb-space-lg rounded-lg border border-outline-variant bg-surface-container-lowest p-space-md text-body-md text-error">
+        {error && !submitting && (
+          <div className="mx-auto max-w-[1240px] px-margin py-6 md:px-gutter-desktop">
+            <div className="rounded-[22px] border border-outline-variant bg-white p-5 text-body-md text-error">
               {error}
-              <p className="mt-1 text-body-sm text-tertiary">
+              <p className="mt-2 text-body-sm text-on-surface-variant">
                 {IS_LOCAL_API ? (
                   <>
                     Start the API with{" "}
-                    <code className="text-on-surface">
+                    <code className="font-mono text-on-surface">
                       uvicorn src.api:app --reload --port 8000
                     </code>
                   </>
                 ) : (
                   <>
                     Could not reach the API at{" "}
-                    <code className="text-on-surface">{API_URL}</code>. If
-                    the backend just woke up, wait a moment and refresh.
+                    <code className="font-mono text-on-surface">{API_URL}</code>.
+                    If the backend just woke up, wait a moment and refresh.
                   </>
                 )}
               </p>
             </div>
-          )}
+          </div>
+        )}
 
-          {response && prefs ? (
+        {response && prefs ? (
+          <div className="mx-auto max-w-[1240px] px-margin py-10 md:px-gutter-desktop">
             <ResultsView prefs={prefs} response={response} onModify={onModify} />
-          ) : (
-            options &&
-            prefs && (
-              <HomeDiscovery
-                locations={options.locations}
-                cuisines={options.cuisines}
-                kitchenCount={options.kitchen_count}
-                prefs={prefs}
-                onPrefsChange={setPrefs}
-                onSubmit={onSubmit}
-                submitting={submitting}
-              />
-            )
-          )}
-        </div>
+          </div>
+        ) : (
+          options &&
+          prefs && (
+            <HomeDiscovery
+              locations={options.locations}
+              cuisines={options.cuisines}
+              kitchenCount={options.kitchen_count}
+              prefs={prefs}
+              onPrefsChange={setPrefs}
+              onSubmit={onSubmit}
+              submitting={submitting}
+            />
+          )
+        )}
       </main>
       <Footer />
       {submitting && prefs && <MatchingOverlay location={prefs.location} />}

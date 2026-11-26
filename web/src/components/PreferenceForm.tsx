@@ -2,12 +2,11 @@
 
 import {
   BUDGET_OPTIONS,
-  FEATURED_CUISINES,
   FREQUENT_LOCATIONS,
   RATING_OPTIONS,
-  titleCase,
 } from "@/lib/constants";
 import type { BudgetLevel, UserPreferences } from "@/lib/types";
+import { CuisinePicker } from "./CuisinePicker";
 
 type Props = {
   locations: string[];
@@ -26,15 +25,16 @@ export function PreferenceForm({
   onSubmit,
   submitting = false,
 }: Props) {
-  const frequent = FREQUENT_LOCATIONS.filter((loc) => locations.includes(loc));
-  const featured = FEATURED_CUISINES.filter((c) =>
-    cuisines.includes(c),
-  ) as string[];
+  const featuredAreas = FREQUENT_LOCATIONS.filter((loc) =>
+    locations.includes(loc),
+  );
+  const selectedExtras = value.location.filter(
+    (loc) => !(FREQUENT_LOCATIONS as readonly string[]).includes(loc),
+  );
+  const chipAreas = [...featuredAreas, ...selectedExtras];
+  const moreAreas = locations.filter((loc) => !chipAreas.includes(loc));
 
-  const budgetDetail = value.budget
-    .map((b) => BUDGET_OPTIONS.find((opt) => opt.value === b)?.detail)
-    .filter(Boolean)
-    .join(" · ");
+  const ready = value.location.length > 0 && value.budget.length > 0;
 
   function toggleLocation(loc: string) {
     const selected = value.location.includes(loc)
@@ -44,12 +44,8 @@ export function PreferenceForm({
     onChange({ ...value, location: selected });
   }
 
-  function toggleBudget(level: BudgetLevel) {
-    const selected = value.budget.includes(level)
-      ? value.budget.filter((b) => b !== level)
-      : [...value.budget, level];
-    if (selected.length === 0) return;
-    onChange({ ...value, budget: selected });
+  function setBudget(level: BudgetLevel) {
+    onChange({ ...value, budget: [level] });
   }
 
   function toggleCuisine(cuisine: string) {
@@ -59,49 +55,57 @@ export function PreferenceForm({
     onChange({ ...value, cuisine: selected });
   }
 
-  function clearCuisines() {
-    onChange({ ...value, cuisine: [] });
-  }
-
   return (
     <form
-      className="flex flex-col gap-space-lg rounded-xl bg-surface-container-lowest p-space-lg shadow-sm md:p-space-xl"
+      className="flex flex-col gap-9 rounded-[32px] border border-outline-variant bg-white p-6 md:p-8"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit();
       }}
     >
-      <div className="flex flex-col gap-space-xs">
-        <label className="flex items-center justify-between text-label-md text-on-surface">
-          <span>Neighborhood / Area</span>
-          <span className="text-body-sm font-normal text-tertiary">
-            Select multiple
-          </span>
-        </label>
-
-        {value.location.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pb-1">
-            {value.location.map((loc) => (
+      <fieldset className="m-0 flex flex-col gap-3.5 border-0 p-0">
+        <legend className="mb-0 w-full p-0 font-display text-headline-sm text-on-surface">
+          Neighbourhood
+        </legend>
+        <span className="text-body-sm text-on-surface-variant">Pick one or more</span>
+        <div className="flex flex-wrap gap-2.5">
+          {chipAreas.map((loc) => {
+            const on = value.location.includes(loc);
+            return (
               <button
                 key={loc}
                 type="button"
+                aria-pressed={on}
+                className={`zchip inline-flex min-h-11 items-center gap-2 rounded-full border-[1.5px] px-[18px] py-2.5 text-[15px] font-semibold ${
+                  on
+                    ? "border-primary bg-primary text-on-primary"
+                    : "border-[#E6DCCF] bg-white text-[#3D352E]"
+                }`}
                 onClick={() => toggleLocation(loc)}
-                className="inline-flex items-center gap-1 rounded bg-primary/10 px-2.5 py-1 text-label-sm font-semibold text-primary transition-colors hover:bg-primary/20"
-                title="Remove neighborhood"
               >
+                {on && (
+                  <svg
+                    aria-hidden
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M5 12l5 5L20 7" />
+                  </svg>
+                )}
                 {loc}
-                <span className="material-symbols-outlined text-[14px]">close</span>
               </button>
-            ))}
-          </div>
-        )}
-
-        <div className="relative flex items-center">
-          <span className="material-symbols-outlined pointer-events-none absolute left-3.5 text-[18px] text-tertiary">
-            location_on
-          </span>
+            );
+          })}
+        </div>
+        {moreAreas.length > 0 && (
           <select
-            className="w-full rounded-lg bg-surface-container-low py-2.5 pl-10 pr-4 text-body-md text-on-surface transition-all duration-150 focus:bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-on-surface"
+            className="h-11 w-full max-w-sm rounded-full border-[1.5px] border-[#E6DCCF] bg-white px-4 text-[15px] font-semibold text-on-surface focus:border-primary focus:outline-none"
             value=""
             onChange={(e) => {
               const next = e.target.value;
@@ -110,192 +114,103 @@ export function PreferenceForm({
               }
             }}
           >
-            <option value="">Add a neighborhood…</option>
-            {locations
-              .filter((loc) => !value.location.includes(loc))
-              .map((loc) => (
-                <option key={loc} value={loc}>
-                  {loc}
-                </option>
-              ))}
+            <option value="">More neighbourhoods…</option>
+            {moreAreas.map((loc) => (
+              <option key={loc} value={loc}>
+                {loc}
+              </option>
+            ))}
           </select>
-        </div>
-        {frequent.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="mr-1 text-label-sm text-tertiary">Frequent:</span>
-            {frequent.map((loc) => {
-              const active = value.location.includes(loc);
-              return (
-                <button
-                  key={loc}
-                  type="button"
-                  className={`rounded px-2 py-0.5 text-body-sm transition-colors ${
-                    active
-                      ? "bg-primary/10 font-semibold text-primary"
-                      : "bg-surface-container text-tertiary hover:text-on-surface"
-                  }`}
-                  onClick={() => toggleLocation(loc)}
-                >
-                  {loc}
-                </button>
-              );
-            })}
-          </div>
         )}
-      </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-space-xs">
-        <label className="flex items-center justify-between text-label-md text-on-surface">
-          <span>Spend Index</span>
-          <span className="text-body-sm font-normal text-secondary">
-            {budgetDetail || "Select one or more"}
-          </span>
-        </label>
-        <div className="grid grid-cols-3 gap-space-xs rounded-lg bg-surface-container-low p-1">
+      <fieldset className="m-0 flex flex-col gap-3.5 border-0 p-0">
+        <legend className="mb-0 p-0 font-display text-headline-sm text-on-surface">
+          Spend for two
+        </legend>
+        <div className="grid grid-cols-3 gap-2.5 rounded-[22px] bg-[#FBF5EE] p-1.5">
           {BUDGET_OPTIONS.map((opt) => {
             const active = value.budget.includes(opt.value);
             return (
               <button
                 key={opt.value}
                 type="button"
-                className={`flex flex-col items-center rounded px-3 py-2 text-center text-label-md transition-all duration-150 ${
+                aria-pressed={active}
+                className={`zchip flex min-h-16 flex-col items-center gap-0.5 rounded-2xl border-0 px-2 py-2.5 ${
                   active
-                    ? "bg-surface-container-lowest text-on-surface shadow-sm"
-                    : "text-tertiary"
+                    ? "bg-white text-[#B8321C] shadow-[0_4px_14px_rgba(31,27,22,0.08)]"
+                    : "bg-transparent text-[#3D352E]"
                 }`}
-                onClick={() => toggleBudget(opt.value as BudgetLevel)}
+                onClick={() => setBudget(opt.value as BudgetLevel)}
               >
-                <span className={active ? "font-semibold text-primary" : ""}>
-                  {opt.label}
-                </span>
-                <span className="text-body-sm font-normal opacity-80">{opt.marks}</span>
+                <span className="font-display text-[18px]">{opt.marks}</span>
+                <span className="text-[13px] font-semibold">{opt.range}</span>
               </button>
             );
           })}
         </div>
-      </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-space-xs">
-        <div className="flex items-center justify-between">
-          <label className="text-label-md text-on-surface">Cuisine &amp; Expression</label>
-          <div className="flex items-center gap-2">
-            <span className="text-body-sm text-tertiary">Optional · tap to toggle</span>
-            {value.cuisine.length > 0 && (
-              <button
-                type="button"
-                onClick={clearCuisines}
-                className="text-label-sm text-primary underline-offset-2 hover:underline"
-              >
-                Clear all
-              </button>
-            )}
-          </div>
-        </div>
+      <CuisinePicker
+        cuisines={cuisines}
+        selected={value.cuisine}
+        onToggle={toggleCuisine}
+        onClear={() => onChange({ ...value, cuisine: [] })}
+      />
 
-        {value.cuisine.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pb-1">
-            {value.cuisine.map((cuisine) => (
-              <button
-                key={`selected-${cuisine}`}
-                type="button"
-                onClick={() => toggleCuisine(cuisine)}
-                className="inline-flex items-center gap-1 rounded bg-primary/10 px-2.5 py-1 text-label-sm font-semibold text-primary transition-colors hover:bg-primary/20"
-                title="Remove cuisine"
-              >
-                {titleCase(cuisine)}
-                <span className="material-symbols-outlined text-[14px]">close</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2 pt-1">
-          {featured.map((cuisine) => {
-            const selected = value.cuisine.includes(cuisine);
-            return (
-              <button
-                key={cuisine}
-                type="button"
-                className={`rounded-full px-3 py-1.5 text-label-sm transition-all duration-150 ${
-                  selected
-                    ? "bg-primary/10 font-semibold text-primary"
-                    : "bg-surface-container-low text-tertiary hover:text-on-surface"
-                }`}
-                onClick={() => toggleCuisine(cuisine)}
-              >
-                {titleCase(cuisine)}
-              </button>
-            );
-          })}
-        </div>
-        {cuisines.length > featured.length && (
-          <select
-            className="mt-1 w-full rounded-lg bg-surface-container-low px-3 py-2 text-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-on-surface"
-            value=""
-            onChange={(e) => {
-              const next = e.target.value;
-              if (next && !value.cuisine.includes(next)) {
-                onChange({ ...value, cuisine: [...value.cuisine, next] });
-              }
-            }}
-          >
-            <option value="">Add another cuisine…</option>
-            {cuisines
-              .filter((c) => !value.cuisine.includes(c))
-              .map((c) => (
-                <option key={c} value={c}>
-                  {titleCase(c)}
-                </option>
-              ))}
-          </select>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-space-xs">
-        <div className="flex items-center justify-between">
-          <label className="text-label-md text-on-surface">
-            Minimum Patron &amp; Critic Score
-          </label>
-          <span className="text-body-sm text-tertiary">Verified dining log</span>
-        </div>
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <fieldset className="m-0 flex flex-col gap-3.5 border-0 p-0">
+        <legend className="mb-0 p-0 font-display text-headline-sm text-on-surface">
+          Minimum rating
+        </legend>
+        <div className="flex flex-wrap gap-2.5">
           {RATING_OPTIONS.map((opt) => {
             const active = value.min_rating === opt.value;
             return (
               <button
                 key={opt.label}
                 type="button"
-                className={`flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-label-md transition-all duration-150 ${
+                aria-pressed={active}
+                className={`zchip inline-flex min-h-11 items-center gap-2 rounded-full border-[1.5px] px-[18px] py-2.5 text-[15px] font-semibold ${
                   active
-                    ? "bg-inverse-surface text-inverse-on-surface shadow-sm"
-                    : "bg-surface-container-low text-tertiary hover:text-on-surface"
+                    ? "border-inverse-surface bg-inverse-surface text-inverse-on-surface"
+                    : "border-[#E6DCCF] bg-white text-[#3D352E]"
                 }`}
                 onClick={() => onChange({ ...value, min_rating: opt.value })}
               >
-                <span
-                  className={`material-symbols-outlined text-[16px] ${
-                    active ? "text-secondary-container" : ""
-                  }`}
-                  style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                <svg
+                  aria-hidden
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="#F2B33D"
+                  stroke="#C98A12"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
                 >
-                  star
-                </span>
-                <span>{opt.label}</span>
+                  <path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z" />
+                </svg>
+                {opt.label}
               </button>
             );
           })}
         </div>
-      </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-space-xs">
-        <label className="flex items-center justify-between text-label-md text-on-surface">
-          <span>Atmosphere or Specific Cravings</span>
-          <span className="text-label-sm font-normal text-tertiary">Optional nuances</span>
+      <div className="flex flex-col gap-2.5">
+        <label
+          htmlFor="zest-mood"
+          className="flex items-baseline justify-between gap-3"
+        >
+          <span className="font-display text-headline-sm text-on-surface">
+            Atmosphere or cravings
+          </span>
+          <span className="text-body-sm text-on-surface-variant">Optional</span>
         </label>
         <textarea
-          className="resize-none rounded-lg bg-surface-container-low p-3.5 text-body-md text-on-surface placeholder:text-tertiary/60 transition-all duration-150 focus:bg-surface-container-lowest focus:outline-none focus:ring-1 focus:ring-on-surface"
+          id="zest-mood"
+          className="resize-y rounded-[18px] border-[1.5px] border-[#E6DCCF] bg-[#FFFBF5] px-[18px] py-4 text-body-md text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary focus:outline-none"
           rows={3}
-          placeholder="e.g. Quiet outdoor courtyard, sourdough pizza, natural light, pet-friendly dinner with friends..."
+          placeholder="Quiet courtyard, sourdough pizza, dinner with friends…"
           value={value.additional_preferences}
           onChange={(e) =>
             onChange({ ...value, additional_preferences: e.target.value })
@@ -303,29 +218,46 @@ export function PreferenceForm({
         />
       </div>
 
-      <div className="flex flex-col gap-space-sm pt-space-xs">
+      <div className="flex flex-col gap-2.5">
         <button
           type="submit"
-          disabled={submitting || value.location.length === 0 || value.budget.length === 0}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3.5 text-label-md text-on-primary shadow-sm transition-colors duration-200 hover:bg-primary-container disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={submitting || !ready}
+          className={`zest-btn flex min-h-[60px] w-full items-center justify-center gap-2.5 px-6 text-[17px] font-bold disabled:cursor-not-allowed ${
+            ready && !submitting
+              ? "bg-primary text-on-primary"
+              : "bg-[#E9DFD3] text-[#6B625A]"
+          }`}
         >
           {submitting ? (
             <>
               <span className="material-symbols-outlined animate-spin text-[18px]">
                 progress_activity
               </span>
-              <span>Filtering Bangalore signals…</span>
+              <span>Ranking tables…</span>
+            </>
+          ) : ready ? (
+            <>
+              <span>Get my shortlist</span>
+              <svg
+                aria-hidden
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
             </>
           ) : (
-            <>
-              <span>Get recommendations</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </>
+            <span>Pick an area and a spend</span>
           )}
         </button>
-        <p className="text-center text-body-sm leading-relaxed text-tertiary">
-          Powered by curated Bangalore culinary signals, reviewer consensus, and chef
-          notes.
+        <p className="text-center text-body-sm text-on-surface-variant">
+          Shortlist from the live Bangalore ledger.
         </p>
       </div>
     </form>

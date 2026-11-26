@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
-import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Inter } from "next/font/google";
 import "./globals.css";
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500", "600"],
+  weight: ["600", "800"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Zest · Bangalore Culinary Intelligence",
+  title: "Zest — Tonight's table, sorted",
   description:
-    "An unhurried survey of tables, moods, and regional terroir across Bangalore.",
+    "Tap a craving, pick a spend, get a shortlist. Playful picks for hungry Bangalore evenings — no photo clutter, just flavour.",
 };
 
 export default function RootLayout({
@@ -27,14 +26,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-radius="round" data-buttons="pill">
       <head>
+        <meta name="theme-color" content="#d63b22" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
         />
       </head>
-      <body className={`${newsreader.variable} ${jakarta.variable} antialiased`}>
+      <body
+        className={`${bricolage.variable} ${inter.variable} bg-surface font-sans text-on-surface antialiased`}
+      >
         {children}
       </body>
     </html>

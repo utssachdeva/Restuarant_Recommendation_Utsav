@@ -1,32 +1,57 @@
+"use client";
+
+import { FoodGlyph } from "@/lib/cuisineIcons";
+
 export function Header() {
   return (
-    <header className="fixed top-0 left-0 z-50 w-full border-b border-surface-container-highest bg-surface/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between px-margin md:px-gutter-desktop">
-        <div className="flex items-center gap-space-md">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary">
-            <span className="material-symbols-outlined text-[18px]">eco</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="font-headline text-headline-sm leading-none tracking-tight text-on-surface">
+    <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-[#FFFBF5]/92 backdrop-blur-md">
+      <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-4 px-margin py-5 md:px-gutter-desktop">
+        <a
+          href="#top"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-on-primary"
+        >
+          Skip to content
+        </a>
+
+        <a href="#top" className="flex items-center gap-3 text-on-surface no-underline">
+          <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-peach">
+            <span className="block h-[34px] w-[34px]">
+              <FoodGlyph kind="italian" />
+            </span>
+          </span>
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-[24px] tracking-[-0.02em] text-on-surface">
               Zest
             </span>
-            <span className="mt-0.5 hidden text-label-sm uppercase tracking-wide text-tertiary sm:inline">
-              Bangalore Culinary Intelligence
+            <span className="mt-1 text-[11px] font-semibold tracking-[0.14em] text-on-surface-variant">
+              BANGALORE NIGHTS
             </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-space-lg">
-          <nav className="hidden items-center gap-space-md md:flex md:gap-space-lg">
-            <span className="text-body-md text-on-surface-variant">How it works</span>
-            <span className="text-title-md text-primary">Bangalore Curations</span>
-            <span className="text-body-md text-on-surface-variant">Saved Places</span>
-          </nav>
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary">
-            <span className="material-symbols-outlined text-[18px] text-on-primary">
-              person
-            </span>
-          </div>
-        </div>
+          </span>
+        </a>
+
+        <nav
+          className="flex flex-wrap items-center gap-5 text-[15px] font-medium md:gap-7"
+          aria-label="Main"
+        >
+          <a
+            href="#how"
+            className="hidden text-[#4A423B] no-underline transition-colors hover:text-primary sm:inline"
+          >
+            How it works
+          </a>
+          <a
+            href="#desk"
+            className="hidden text-[#4A423B] no-underline transition-colors hover:text-primary sm:inline"
+          >
+            Cuisines
+          </a>
+          <a
+            href="#desk"
+            className="zest-btn inline-flex h-auto items-center justify-center bg-primary px-[22px] py-3 text-[15px] font-semibold text-on-primary"
+          >
+            Find a table
+          </a>
+        </nav>
       </div>
     </header>
   );

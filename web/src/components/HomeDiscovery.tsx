@@ -1,8 +1,9 @@
 "use client";
 
 import type { UserPreferences } from "@/lib/types";
+import { CoverHero } from "./CoverHero";
 import { PreferenceForm } from "./PreferenceForm";
-import { SpotlightPanel } from "./SpotlightPanel";
+import { TicketPanel } from "./TicketPanel";
 
 type Props = {
   locations: string[];
@@ -13,6 +14,30 @@ type Props = {
   onSubmit: () => void;
   submitting: boolean;
 };
+
+const STEPS = [
+  {
+    n: "1",
+    title: "Tap a craving",
+    body: "Neighbourhood, spend and cuisine — picked by tapping, not typing.",
+    bg: "#FFE9E2",
+    fg: "#B8321C",
+  },
+  {
+    n: "2",
+    title: "We cut the ledger",
+    body: "Bangalore kitchens filtered to what fits before any ranking happens.",
+    bg: "#FFF1C9",
+    fg: "#8A5A00",
+  },
+  {
+    n: "3",
+    title: "Shortlist lands",
+    body: "Five tables, each with a plain reason why it's the one for tonight.",
+    bg: "#E3F3E8",
+    fg: "#2E7D4F",
+  },
+] as const;
 
 export function HomeDiscovery({
   locations,
@@ -25,52 +50,62 @@ export function HomeDiscovery({
 }: Props) {
   return (
     <div className="flex w-full flex-col">
-      <div className="flex w-full items-center justify-between pb-space-md">
-        <div className="flex items-center gap-space-xs">
-          <span className="inline-block h-2 w-2 rounded-full bg-primary" />
-          <span className="text-label-sm uppercase tracking-widest text-secondary">
-            Gazette Edition No. 42 · Autumn Registry
-          </span>
-        </div>
-        <div className="hidden items-center gap-space-sm text-tertiary sm:flex">
-          <span className="material-symbols-outlined text-[15px]">schedule</span>
-          <span className="text-body-sm">Curation updated from live Bangalore tables</span>
-        </div>
-      </div>
+      <CoverHero kitchenCount={kitchenCount} />
 
-      <section className="relative pb-space-lg pt-space-xs">
-        <div className="flex max-w-3xl flex-col gap-space-xs">
-          <div className="inline-flex w-fit items-center gap-space-xs rounded-full bg-surface-container-high px-2 py-0.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            <span className="text-label-sm text-on-surface-variant">
-              Bangalore dining engine
-            </span>
-          </div>
-          <h1 className="mt-space-xs font-display text-[34px] leading-[42px] tracking-tight text-on-surface md:text-display-lg md:leading-[56px]">
-            Where shall we eat tonight?
-          </h1>
-          <p className="max-w-xl text-body-lg text-tertiary">
-            Find where to eat — preferences in, recommendations out. An unhurried survey
-            of tables, moods, and regional terroir across the garden city.
-          </p>
+      <section
+        id="how"
+        className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-margin pb-12 pt-20 md:px-gutter-desktop md:pb-12 md:pt-28"
+      >
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          {STEPS.map((step) => (
+            <div
+              key={step.n}
+              className="zest-card flex flex-col gap-3.5 rounded-[28px] border border-outline-variant bg-white p-7"
+            >
+              <span
+                className="flex h-12 w-12 items-center justify-center rounded-2xl font-display text-[20px]"
+                style={{ background: step.bg, color: step.fg }}
+              >
+                {step.n}
+              </span>
+              <h2 className="m-0 font-display text-headline-md text-on-surface">
+                {step.title}
+              </h2>
+              <p className="m-0 text-body-md text-[#5E554D]">{step.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      <div className="grid grid-cols-1 items-start gap-space-xl lg:grid-cols-12">
-        <div className="flex flex-col gap-space-md lg:col-span-7">
-          <PreferenceForm
-            locations={locations}
-            cuisines={cuisines}
-            value={prefs}
-            onChange={onPrefsChange}
-            onSubmit={onSubmit}
-            submitting={submitting}
-          />
+      <section
+        id="desk"
+        className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-margin pb-16 pt-12 md:px-gutter-desktop"
+      >
+        <div className="mb-8 flex flex-col gap-2">
+          <span className="text-[13px] font-bold tracking-[0.14em] text-[#B8321C]">
+            PREFERENCE DESK
+          </span>
+          <h2 className="m-0 font-display text-headline-lg text-on-surface">
+            What are we eating tonight?
+          </h2>
         </div>
-        <div className="lg:col-span-5">
-          <SpotlightPanel kitchenCount={kitchenCount} />
+
+        <div className="flex flex-wrap items-start gap-6">
+          <div className="min-w-0 flex-[999_1_560px]">
+            <PreferenceForm
+              locations={locations}
+              cuisines={cuisines}
+              value={prefs}
+              onChange={onPrefsChange}
+              onSubmit={onSubmit}
+              submitting={submitting}
+            />
+          </div>
+          <div id="ledger" className="min-w-0 flex-[1_1_320px]">
+            <TicketPanel prefs={prefs} kitchenCount={kitchenCount} />
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

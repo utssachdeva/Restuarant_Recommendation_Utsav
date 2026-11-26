@@ -4,6 +4,12 @@
 venv/
 env/
 
+# Taste Skill (local agent kit + deal history)
+.agents/
+.taste-skill/
+web/public/photos/
+web/public/assets/
+
 # Python
 __pycache__/
 *.py[cod]
